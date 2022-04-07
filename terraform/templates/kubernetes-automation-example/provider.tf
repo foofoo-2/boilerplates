@@ -27,11 +27,8 @@ terraform {
 }
 
 provider "civo" {
-    token = var.civo_token
-
-    # TODO: (optional) change region to your desired datacenter location
-    # ---
-    # region = "FRA1"
+    token  = var.civo_token
+    region = "FRA1"
 }
 
 provider "helm" {

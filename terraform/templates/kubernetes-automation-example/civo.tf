@@ -2,8 +2,6 @@
 
 data "civo_size" "xsmall" {
 
-    # TODO: (optional): change the values according to your desired instance image sizing
-    # ---
     filter {
         key = "name"
         values = ["g4s.kube.xsmall"]
@@ -14,9 +12,11 @@ data "civo_size" "xsmall" {
 resource "civo_kubernetes_cluster" "k8s_demo_1" {
     name = "k8s_demo_1"
     applications = ""
-    num_target_nodes = 2
-    target_nodes_size = element(data.civo_size.xsmall.sizes, 0).name
     firewall_id = civo_firewall.fw_demo_1.id
+    pools {
+        size = element(data.civo_size.xsmall.sizes, 0).name
+        node_count = 2
+    }
 }
 
 resource "civo_firewall" "fw_demo_1" {
@@ -67,11 +67,11 @@ resource "time_sleep" "wait_for_kubernetes" {
     create_duration = "20s"
 }
 
-data "civo_loadbalancer" "traefik_lb" {
-
-    depends_on = [
-        helm_release.traefik
-    ]
-
-    name = "k8s_demo_1-traefik-traefik"
-}
+#data "civo_loadbalancer" "traefik_lb" {
+#
+#    depends_on = [
+#        helm_release.traefik
+#    ]
+#
+#    name = "k8s_demo_1-traefik-traefik"
+#}
