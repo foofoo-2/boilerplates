@@ -1,21 +1,14 @@
 resource "kubernetes_namespace" "certmanager" {
-
-    depends_on = [
-        time_sleep.wait_for_kubernetes
-    ]
-
     metadata {
         name = "certmanager"
     }
 
+    depends_on = [
+        time_sleep.wait_for_kubernetes
+    ]
 }
 
 resource "helm_release" "certmanager" {
-
-    depends_on = [
-        kubernetes_namespace.certmanager
-    ]
-
     name = "certmanager"
     namespace = "certmanager"
 
@@ -27,24 +20,23 @@ resource "helm_release" "certmanager" {
         name  = "installCRDs"
         value = "true"
     }
+
+    depends_on = [
+        kubernetes_namespace.certmanager
+    ]
 }
 
 resource "time_sleep" "wait_for_certmanager" {
+    create_duration = "10s"
 
     depends_on = [
         helm_release.certmanager
     ]
-
-    create_duration = "10s"
 }
 
 # Create a ClusterIssuer
-
 resource "kubectl_manifest" "cloudflare_prod" {
 
-    depends_on = [
-        time_sleep.wait_for_certmanager
-    ]
 
     # TODO: add your mail address according to your configuration and API authentication settings!
     # ---
@@ -67,13 +59,16 @@ spec:
             name: cloudflare-api-key-secret
             key: api-key
     YAML
+
+    depends_on = [
+        time_sleep.wait_for_certmanager
+    ]
 }
 
 resource "time_sleep" "wait_for_clusterissuer" {
+    create_duration = "30s"
 
     depends_on = [
         kubectl_manifest.cloudflare_prod
     ]
-
-    create_duration = "30s"
 }
