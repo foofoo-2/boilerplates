@@ -11,20 +11,20 @@ resource "kubernetes_namespace" "external-dns" {
 }
 
 resource "kubernetes_secret" "gandi_api_key_secret" {
-    metadata {
-      name = "gandi-api-key-secret"
-      namespace = "external-dns"
-    }
+  metadata {
+    name = "gandi-api-key-secret"
+    namespace = "external-dns"
+   }
 
-    data = {
-      GANDI_KEY = var.gandi_api_key
-    }
+   data = {
+     GANDI_KEY = var.gandi_api_key
+   }
 
-    type = "Opaque"
+   type = "Opaque"
 
-    depends_on = [
-      kubernetes_namespace.external_dns
-    ]
+   depends_on = [
+     kubernetes_namespace.external-dns
+   ]
 }
 
 resource "kubernetes_deployment" "external-dns" {
@@ -69,9 +69,9 @@ resource "kubernetes_deployment" "external-dns" {
         }
       }
     }
-
-    depends_on = [
-      kubernetes_secret.gandi_api_key_secret
-    ]
   }
+
+  depends_on = [
+    kubernetes_secret.gandi_api_key_secret
+  ]
 }
